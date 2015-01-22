@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Collection Random</title>
+    <link rel="stylesheet" type="text/css" href="lib/normalize.css">
+    <link rel="stylesheet" type="text/css" href="lib/rdio-utils/rdio-utils.css">
+    <link rel="stylesheet/less" type="text/css" href="main.less">
+
+    <!-- Register your app at http://www.rdio.com/developers/create/ and replace client_id below with yours  -->
+    <script src="https://www.rdio.com/api/api.js?client_id=Jsb8-ZigYlSGEeJfBio6TQ"></script>
+
+    <script src="lib/jquery-1.9.1.min.js"></script>
+    <script src="lib/underscore-1.4.4.min.js"></script>
+    <script src="lib/less-1.3.0.min.js"></script>
+    <script src="lib/rdio-utils/rdio-utils.js"></script>
+    <script src="main.js"></script>
+  </head>
+  <body>
+    <div class="header">
+      <button class="shuffle">Shuffle</button>
+      <div class="auth"></div>
+    </div>
+    <div class="content">
+      <div class="unauthenticated">
+        <p>This app gives you a random selection of albums from your collection and allows you to easily add them to your queue.</p>
+        <p>Sign in above to get started.</p>
+      </div>
+      <div class="authenticated">
+        <p>Click the heart on any album to add it to your queue.</p>
+        <div class="albums">
+          Loading...
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
