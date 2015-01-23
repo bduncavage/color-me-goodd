@@ -19,8 +19,9 @@
   </head>
   <body>
     <div class="header">
-      <button class="shuffle">Shuffle</button>
       <div class="auth"></div>
+        <button class="shuffle">Refresh</button>
+        <button class="original">Show Original</button>
     </div>
     <div class="content">
       <div class="unauthenticated">
@@ -28,12 +29,14 @@
         <p>Sign in above to get started.</p>
       </div>
       <div class="authenticated">
-        <p class="appTitle">Color Me Goodd</p>
+            <p class="appTitle">
+                Color Me Goodd
+            </p>
           <div class="gridContainer">
                 <div class="largeAlbumContainer">
                     <canvas class='imageCanvas' id="staticCanvas" width="640" height="640"></canvas>
                     <canvas class='imageCanvas' id="drawingCanvas" width="640" height="640"></canvas>
-                    <img id="largeAlbum" crossOrigin="anonymous" />
+                    <img id="largeAlbum" crossOrigin="anonymous" width="640" height="640"/>
                 </div>
                 <div class="albums">
                     Loading...

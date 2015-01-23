@@ -15,6 +15,7 @@
       this.colorToAlbum = {};
       this.processingComplete = false;
       this.initialProcessingStarted = false;
+      this.showOriginal = true;
 
       if (!rdioUtils.startupChecks()) {
         return;
@@ -42,6 +43,22 @@
         .click(function() {
           self.startProcessing();
         });
+
+      var image = $('#largeAlbum');
+      image.fadeOut();
+      $('.original').click(function() {
+        if (self.showOriginal) {
+          self.showOriginal = false;
+          this.innerHTML = "Make Goodd";
+          image.css('z-index', 100);
+          image.fadeIn();
+        } else {
+          self.showOriginal = true;
+          this.innerHTML = "Show Original";
+          image.fadeOut();
+        }
+
+      });
     },
 
     // ----------
@@ -51,6 +68,10 @@
 
       var randomAlbumIndex = Math.floor( Math.random() * this.possibleAlbums.length);
       var randomAlbum = this.possibleAlbums[randomAlbumIndex];
+
+      $('#largeAlbum').attr('src', randomAlbum.bigIcon);
+      $('body').css('background', 'url("' + randomAlbum.backgroundImageUrl + '&w=1200") no-repeat center center fixed');
+      $('body').css('background-size', 'cover');
 
       $('#largeAlbum').bind('load', function() {
        // var staticCanvas = document.createElement('staticCanvas');
@@ -66,7 +87,7 @@
 
         var gridSizeInPx = 640;
         var minBlockSize = 20;
-        var blockSizeModifier = 2;
+        var blockSizeModifier = 16;
         var blockSize = gridSizeInPx / blockSizeModifier;
         var gridSize = gridSizeInPx / blockSize;
 
@@ -75,8 +96,7 @@
           // Analyze the block data to get a color.
           var color = cf.getColorFromImageData(blockData);
           extractedColors.push(color);
-          self.drawingContext.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
-          self.drawingContext.fillRect(col * blockSize, row * blockSize, blockSize, blockSize);
+
           if (computeAlbums) {
             // try to find the album for this color
             var currentDistance = -1;
@@ -92,7 +112,18 @@
               }
             }
             self.colorToAlbum[""+color2[0]+color[1]+color[2]] = candidateAlbum;
+            var shadowFactor = 1;
+            if (candidateAlbum.playCount < 300) {
+              shadowFactor = candidateAlbum.playCount / 300;
+            }
+            self.drawingContext.shadowBlur = 45 * shadowFactor;
+            self.drawingContext.shadowColor = "#111";
+          } else {
+            self.drawingContext.shadowBlur = 0;
           }
+
+          self.drawingContext.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
+          self.drawingContext.fillRect(col * blockSize, row * blockSize, blockSize, blockSize);
         }
 
         var currentRow = 0;
@@ -111,6 +142,7 @@
               computeAlbums = blockSize <= minBlockSize;
               moveToNextBlock();
             } else {
+              computeAlbums = false;
               self.processingComplete = true;
               return;
             }
@@ -126,6 +158,24 @@
           setTimeout(moveToNextBlock, 5);
         }
         setTimeout(moveToNextBlock, 2000);
+
+        $('#drawingCanvas').click(function(e) {
+          if (!self.processingComplete) {
+            return;
+          }
+          var pos = findPos(this);
+          var x = e.pageX - pos.x;
+          var y = e.pageY - pos.y;
+
+          var color = self.drawingContext.getImageData(x, y, 1, 1).data;
+          var key = ""+color[0]+color[1]+color[2];
+          var album = self.colorToAlbum[key];
+
+          $('#chosenColor').css('background-color', 'rgb('+color[0]+','+color[1]+','+color[2]+')');
+          var ac = album.dominantColor;
+          $('#destinationAlbumColor').css('background-color', 'rgb('+ac.r+','+ac.g+','+ac.b+')');
+          $('#destinationAlbumIcon').attr('src', album.icon);
+        });
       });
 
       function findPos(obj) {
@@ -139,29 +189,6 @@
         }
         return undefined;
       }
-
-      $('#largeAlbum').attr('src', randomAlbum.bigIcon);
-
-      $('body').css('background', 'url("' + randomAlbum.backgroundImageUrl + '&w=1200") no-repeat center center fixed');
-      $('body').css('background-size', 'cover');
-
-      $('#drawingCanvas').click(function(e) {
-        if (!self.processingComplete) {
-          return;
-        }
-        var pos = findPos(this);
-        var x = e.pageX - pos.x;
-        var y = e.pageY - pos.y;
-
-        var color = self.drawingContext.getImageData(x, y, 1, 1).data;
-        var key = ""+color[0]+color[1]+color[2];
-        var album = self.colorToAlbum[key];
-
-        $('#chosenColor').css('background-color', 'rgb('+color[0]+','+color[1]+','+color[2]+')');
-        var ac = album.dominantColor;
-        $('#destinationAlbumColor').css('background-color', 'rgb('+ac.r+','+ac.g+','+ac.b+')');
-        $('#destinationAlbumIcon').attr('src', album.icon);
-      });
     },
 
     // ----------
