@@ -10,7 +10,6 @@
     init: function() {
       var self = this;
 
-      this.currentAlbums = [];
       this.possibleAlbums = [];
       this.cellPosToAlbum = {};
       this.processingComplete = false;
@@ -63,6 +62,12 @@
       $('.shuffle')
         .click(function() {
           _showGood();
+          for (var i = 0; i < self.possibleAlbums.length; i++) {
+            var rand = Math.floor(Math.random() * self.possibleAlbums.length);
+            var tmp = self.possibleAlbums[i];
+            self.possibleAlbums[i] = self.possibleAlbums[rand];
+            self.possibleAlbums[rand] = tmp;
+          }
           self.startProcessing();
         });
 
