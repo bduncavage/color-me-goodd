@@ -13,7 +13,9 @@
     <script src="lib/underscore-1.4.4.min.js"></script>
     <script src="lib/less-1.3.0.min.js"></script>
     <script src="lib/rdio-utils/rdio-utils.js"></script>
+    <script src="color-thief.js"></script>
     <script src="main.js"></script>
+
   </head>
   <body>
     <div class="header">
@@ -26,10 +28,22 @@
         <p>Sign in above to get started.</p>
       </div>
       <div class="authenticated">
-        <p>Click the heart on any album to add it to your queue.</p>
-        <div class="albums">
-          Loading...
-        </div>
+        <p class="appTitle">Color Me Goodd</p>
+          <div class="gridContainer">
+                <div class="largeAlbumContainer">
+                    <canvas class='imageCanvas' id="staticCanvas" width="600" height="600"></canvas>
+                    <canvas class='imageCanvas' id="drawingCanvas" width="600" height="600"></canvas>
+                    <img id="largeAlbum" crossOrigin="anonymous" />
+                </div>
+                <div class="albums">
+                    Loading...
+                </div>
+          </div>
+          <div class="destinationAlbumInfo">
+              <img id="destinationAlbumIcon" />
+              <div id="chosenColor" class="colorDiv"></div>
+              <div id="destinationAlbumColor" class="colorDiv"></div>
+          </div>
       </div>
     </div>
   </body>

@@ -18,8 +18,7 @@
 }
 .rdio-utils-album {
   display: inline-block;
-  width: 202px;
-  margin: 0 10px 20px 10px;
+  width: 60px;
   overflow: hidden;
   text-align: left;
   font-size: 12px;
@@ -37,9 +36,8 @@
   text-decoration: underline;
 }
 .rdio-utils-album-icon {
-  width: 200px;
-  height: 200px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: 60px;
+  height: 60px;
   background-repeat: no-repeat;
   background-size: contain;
 }
