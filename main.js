@@ -15,6 +15,9 @@
       this.processingComplete = false;
       this.initialProcessingStarted = false;
       this.colorThief = new ColorThief();
+      this.playCountRange = [];
+
+      this.largeAlbum = $('#largeAlbum');
 
       if (!rdioUtils.startupChecks()) {
         return;
@@ -31,9 +34,16 @@
         localStorage: true,
         onAlbumsLoaded: function(albums) {
           var tmpImage = new Image();
+          var curMin = -1;
+          var curMax = -1;
           tmpImage.crossOrigin = 'anonymous';
           for (var i in albums) {
             var a = albums[i];
+            if (a.playCount < curMin || curMin == -1) {
+              curMin = a.playCount;
+            } else if (a.playCount > curMax || curMax == -1) {
+              curMax = a.playCount;
+            }
             tmpImage.onload = function() {
               var c = self.colorThief.getColor(tmpImage);
               a.dominantColor.r = c[0];
@@ -48,19 +58,31 @@
             };
             tmpImage.src = a.icon;
           }
+          if (self.playCountRange.length < 2) {
+            self.playCountRange.push(curMin);
+            self.playCountRange.push(curMax);
+          } else {
+            if (curMin < self.playCountRange[0]) {
+              self.playCounRange[0] = curMin;
+            }
+            if (curMax > self.playCountRange[1]) {
+              self.playCountRange[1] = curMax;
+            }
+          }
         }
       });
 
-      var image = $('#largeAlbum');
-      image.fadeOut();
+      self.largeAlbum.hide();
 
       var _showGood = function() {
-        image.hide();
         $('#drawingCanvas').fadeIn();
         $('#albumsCanvas').fadeOut();
+        $('#staticCanvas').fadeOut();
       }
-      $('.shuffle')
-        .click(function() {
+
+      $('.shuffle').click(function() {
+          $('#destinationAlbumColor').css('background-color', 'transparent');
+          $('#destinationAlbumIcon').attr('src', null);
           _showGood();
           for (var i = 0; i < self.possibleAlbums.length; i++) {
             var rand = Math.floor(Math.random() * self.possibleAlbums.length);
@@ -72,8 +94,7 @@
         });
 
       $('.original').click(function() {
-          image.css('z-index', 100);
-          image.fadeIn();
+        $('#staticCanvas').fadeIn();
         $('#drawingCanvas').fadeOut();
         $('#albumsCanvas').fadeOut();
       });
@@ -91,7 +112,7 @@
       var randomAlbumIndex = Math.floor( Math.random() * this.possibleAlbums.length);
       var randomAlbum = this.possibleAlbums[randomAlbumIndex];
 
-      $('#largeAlbum').attr('src', randomAlbum.bigIcon);
+      self.largeAlbum.attr('src', randomAlbum.bigIcon);
       $('body').css('background', 'url("' + randomAlbum.backgroundImageUrl + '&w=1200") no-repeat center center fixed');
       $('body').css('background-size', 'cover');
 
@@ -105,7 +126,7 @@
         self.drawingContext = drawingCanvas.getContext("2d");
         // Extract each cell from the image, draw it into a separate staticCanvas and analyze it.
         var extractedColors = [];
-        var cf = new ColorThief();
+        var cf = self.colorThief;
 
         var gridSizeInPx = 600;
         var minBlockSize = 30;
@@ -134,11 +155,8 @@
               }
             }
             self.cellPosToAlbum[""+col+row] = candidateAlbum;
-            var shadowFactor = 1;
-            if (candidateAlbum.playCount < 300) {
-              shadowFactor = candidateAlbum.playCount / 300;
-            }
-            self.drawingContext.shadowBlur = 10 * shadowFactor;
+            var shadowFactor = (candidateAlbum.playCount - self.playCountRange[0]) / (self.playCountRange[1] - self.playCountRange[0]);
+            self.drawingContext.shadowBlur = 20 * shadowFactor;
             self.drawingContext.shadowColor = "#111";
           } else {
             self.drawingContext.shadowBlur = 0;
@@ -174,12 +192,12 @@
             currentCol++;
             if (currentCol >= gridSize) {
               currentCol = 0;
-              currentRow++
+              currentRow++;
             }
           }
           setTimeout(moveToNextBlock, 5);
         }
-        setTimeout(moveToNextBlock, 2000);
+        moveToNextBlock();
 
         $('#drawingCanvas').click(function(e) {
           if (!self.processingComplete) {
