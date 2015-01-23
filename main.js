@@ -14,6 +14,7 @@
       this.possibleAlbums = [];
       this.colorToAlbum = {};
       this.processingComplete = false;
+      this.initialProcessingStarted = false;
 
       if (!rdioUtils.startupChecks()) {
         return;
@@ -30,47 +31,23 @@
         localStorage: true,
         onAlbumsLoaded: function(albums) {
           self.possibleAlbums = self.possibleAlbums.concat(albums);
-          self.indicies = _.shuffle(_.range(self.possibleAlbums.length));
-          if (!self.currentAlbums.length) {
-            self.shuffle();
+          self.indicies = _.startProcessing(_.range(self.possibleAlbums.length));
+          if (!self.currentAlbums.length && !self.initialProcessingStarted) {
+            self.startProcessing();
           }
         }
       });
 
       $('.shuffle')
         .click(function() {
-          self.shuffle();
+          self.startProcessing();
         });
     },
 
     // ----------
-    shuffle: function() {
+    startProcessing: function() {
       var self = this;
-
-      $('.albums').empty();
-      this.currentAlbums = [];
-
-      var addAlbum = function(album, alternativeColor) {
-        if (!album.canStream) {
-          return;
-        }
-
-        self.currentAlbums.push(album);
-
-        var widget = rdioUtils.albumWidget(album, alternativeColor);
-        var $widget = $(widget.element());
-        $('.albums').append($widget);
-
-        $('<div>')
-          .addClass('btn yes')
-          .click(function(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            R.player.queue.add(album.key);
-            $widget.fadeOut();
-          })
-          .appendTo($widget.find('.rdio-utils-album-hover-overlay'));
-      };
+      self.initialProcessingStarted = true;
 
       var randomAlbumIndex = Math.floor( Math.random() * this.possibleAlbums.length);
       var randomAlbum = this.possibleAlbums[randomAlbumIndex];
@@ -81,16 +58,16 @@
         var drawingCanvas = document.getElementById('drawingCanvas');
        // $('.gridContainer').appendChild(staticCanvas);
         var staticContext = staticCanvas.getContext("2d");
-        staticContext.drawImage(document.getElementById("largeAlbum"), 0, 0);
+        staticContext.drawImage(document.getElementById("largeAlbum"), 0, 0, 640, 640);
         self.drawingContext = drawingCanvas.getContext("2d");
         // Extract each cell from the image, draw it into a separate staticCanvas and analyze it.
         var extractedColors = [];
         var cf = new ColorThief();
 
-        var gridSizeInPx = 600;
+        var gridSizeInPx = 640;
         var minBlockSize = 20;
-        var startBlockSize = gridSizeInPx / 2;
-        var blockSize = startBlockSize;
+        var blockSizeModifier = 2;
+        var blockSize = gridSizeInPx / blockSizeModifier;
         var gridSize = gridSizeInPx / blockSize;
 
         function processBlock(col, row, computeAlbums) {
@@ -123,12 +100,12 @@
         var computeAlbums = false;
 
         function moveToNextBlock() {
-
           if (currentRow >= gridSize) {
             if (blockSize > minBlockSize ) {
               // reduce block size
-              blockSize -= 40;
-              gridSize = Math.floor(gridSizeInPx / blockSize);
+              blockSizeModifier *= 2;
+              blockSize = gridSizeInPx / blockSizeModifier;
+              gridSize = gridSizeInPx / blockSize;
               currentCol = 0;
               currentRow = 0;
               computeAlbums = blockSize <= minBlockSize;
