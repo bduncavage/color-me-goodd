@@ -12,7 +12,7 @@
 
       this.currentAlbums = [];
       this.possibleAlbums = [];
-      this.colorToAlbum = {};
+      this.cellPosToAlbum = {};
       this.processingComplete = false;
       this.initialProcessingStarted = false;
       this.showOriginal = true;
@@ -111,7 +111,7 @@
                 currentDistance = dist;
               }
             }
-            self.colorToAlbum[""+color2[0]+color[1]+color[2]] = candidateAlbum;
+            self.cellPosToAlbum[""+col+row] = candidateAlbum;
             var shadowFactor = 1;
             if (candidateAlbum.playCount < 300) {
               shadowFactor = candidateAlbum.playCount / 300;
@@ -167,11 +167,11 @@
           var x = e.pageX - pos.x;
           var y = e.pageY - pos.y;
 
-          var color = self.drawingContext.getImageData(x, y, 1, 1).data;
-          var key = ""+color[0]+color[1]+color[2];
-          var album = self.colorToAlbum[key];
+          var col = Math.floor(x / blockSize);
+          var row = Math.floor(y / blockSize);
+          var key = ""+col+row;
+          var album = self.cellPosToAlbum[key];
 
-          $('#chosenColor').css('background-color', 'rgb('+color[0]+','+color[1]+','+color[2]+')');
           var ac = album.dominantColor;
           $('#destinationAlbumColor').css('background-color', 'rgb('+ac.r+','+ac.g+','+ac.b+')');
           $('#destinationAlbumIcon').attr('src', album.icon);
