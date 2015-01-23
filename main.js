@@ -15,6 +15,7 @@
       this.cellPosToAlbum = {};
       this.processingComplete = false;
       this.initialProcessingStarted = false;
+      this.colorThief = new ColorThief();
 
       if (!rdioUtils.startupChecks()) {
         return;
@@ -30,21 +31,41 @@
       this.collection = rdioUtils.collectionAlbums({
         localStorage: true,
         onAlbumsLoaded: function(albums) {
-          self.possibleAlbums = self.possibleAlbums.concat(albums);
-          self.indicies = _.startProcessing(_.range(self.possibleAlbums.length));
-          if (!self.currentAlbums.length && !self.initialProcessingStarted) {
-            self.startProcessing();
+          var tmpImage = new Image();
+          tmpImage.crossOrigin = 'anonymous';
+          for (var i in albums) {
+            var a = albums[i];
+            tmpImage.onload = function() {
+              var c = self.colorThief.getColor(tmpImage);
+              a.dominantColor.r = c[0];
+              a.dominantColor.g = c[1];
+              a.dominantColor.b = c[2];
+
+              self.possibleAlbums = self.possibleAlbums.concat(albums);
+              self.indicies = _.startProcessing(_.range(self.possibleAlbums.length));
+              if (self.possibleAlbums.length > 100 && !self.initialProcessingStarted) {
+                self.startProcessing();
+              }
+            };
+            tmpImage.src = a.icon;
           }
         }
       });
 
+      var image = $('#largeAlbum');
+      image.fadeOut();
+
+      var _showGood = function() {
+        image.hide();
+        $('#drawingCanvas').fadeIn();
+        $('#albumsCanvas').fadeOut();
+      }
       $('.shuffle')
         .click(function() {
+          _showGood();
           self.startProcessing();
         });
 
-      var image = $('#largeAlbum');
-      image.fadeOut();
       $('.original').click(function() {
           image.css('z-index', 100);
           image.fadeIn();
@@ -53,9 +74,7 @@
       });
 
       $('#showGoodd').click(function() {
-        image.hide();
-        $('#drawingCanvas').fadeIn();
-        $('#albumsCanvas').fadeOut();
+        _showGood();
       });
     },
 
@@ -72,22 +91,20 @@
       $('body').css('background-size', 'cover');
 
       $('#largeAlbum').bind('load', function() {
-       // var staticCanvas = document.createElement('staticCanvas');
         var staticCanvas = document.getElementById('staticCanvas');
         var drawingCanvas = document.getElementById('drawingCanvas');
         var albumsCanvas = document.getElementById('albumsCanvas');
         var albumsContext = albumsCanvas.getContext("2d");
-       // $('.gridContainer').appendChild(staticCanvas);
         var staticContext = staticCanvas.getContext("2d");
-        staticContext.drawImage(document.getElementById("largeAlbum"), 0, 0, 640, 640);
+        staticContext.drawImage(document.getElementById("largeAlbum"), 0, 0, 600, 600);
         self.drawingContext = drawingCanvas.getContext("2d");
         // Extract each cell from the image, draw it into a separate staticCanvas and analyze it.
         var extractedColors = [];
         var cf = new ColorThief();
 
-        var gridSizeInPx = 640;
-        var minBlockSize = 20;
-        var blockSizeModifier = 16;
+        var gridSizeInPx = 600;
+        var minBlockSize = 30;
+        var blockSizeModifier = 10;
         var blockSize = gridSizeInPx / blockSizeModifier;
         var gridSize = gridSizeInPx / blockSize;
 
@@ -116,7 +133,7 @@
             if (candidateAlbum.playCount < 300) {
               shadowFactor = candidateAlbum.playCount / 300;
             }
-            self.drawingContext.shadowBlur = 45 * shadowFactor;
+            self.drawingContext.shadowBlur = 10 * shadowFactor;
             self.drawingContext.shadowColor = "#111";
           } else {
             self.drawingContext.shadowBlur = 0;
