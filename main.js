@@ -15,7 +15,6 @@
       this.cellPosToAlbum = {};
       this.processingComplete = false;
       this.initialProcessingStarted = false;
-      this.showOriginal = true;
 
       if (!rdioUtils.startupChecks()) {
         return;
@@ -47,17 +46,16 @@
       var image = $('#largeAlbum');
       image.fadeOut();
       $('.original').click(function() {
-        if (self.showOriginal) {
-          self.showOriginal = false;
-          this.innerHTML = "Make Goodd";
           image.css('z-index', 100);
           image.fadeIn();
-        } else {
-          self.showOriginal = true;
-          this.innerHTML = "Show Original";
-          image.fadeOut();
-        }
+        $('#drawingCanvas').fadeOut();
+        $('#albumsCanvas').fadeOut();
+      });
 
+      $('#showGoodd').click(function() {
+        image.hide();
+        $('#drawingCanvas').fadeIn();
+        $('#albumsCanvas').fadeOut();
       });
     },
 
@@ -77,6 +75,8 @@
        // var staticCanvas = document.createElement('staticCanvas');
         var staticCanvas = document.getElementById('staticCanvas');
         var drawingCanvas = document.getElementById('drawingCanvas');
+        var albumsCanvas = document.getElementById('albumsCanvas');
+        var albumsContext = albumsCanvas.getContext("2d");
        // $('.gridContainer').appendChild(staticCanvas);
         var staticContext = staticCanvas.getContext("2d");
         staticContext.drawImage(document.getElementById("largeAlbum"), 0, 0, 640, 640);
@@ -175,6 +175,33 @@
           var ac = album.dominantColor;
           $('#destinationAlbumColor').css('background-color', 'rgb('+ac.r+','+ac.g+','+ac.b+')');
           $('#destinationAlbumIcon').attr('src', album.icon);
+        });
+
+        $('#showAlbums').click(function() {
+          var curCol = 0;
+          var curRow = 0;
+          var tmpImage = new Image();
+          $('#largeAlbum').fadeOut();
+          $('#drawingCanvas').fadeOut();
+          $('#albumsCanvas').fadeIn();
+          tmpImage.onload = function() {
+            albumsContext.drawImage(tmpImage, curCol * blockSize, curRow * blockSize, blockSize, blockSize);
+            curCol++;
+            if (curCol >= gridSize) {
+              curCol = 0;
+              curRow++;
+            }
+            if (curRow < gridSize) {
+              var album = self.cellPosToAlbum[""+curCol+curRow];
+              if (tmpImage.src === album.icon) {
+                tmpImage.onload();
+              } else {
+                tmpImage.src = album.icon;
+              }
+            }
+          }
+          var album = self.cellPosToAlbum[""+curCol+curRow];
+          tmpImage.src = album.icon;
         });
       });
 
