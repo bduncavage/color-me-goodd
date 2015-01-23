@@ -44,19 +44,6 @@
             } else if (a.playCount > curMax || curMax == -1) {
               curMax = a.playCount;
             }
-            tmpImage.onload = function() {
-              var c = self.colorThief.getColor(tmpImage);
-              a.dominantColor.r = c[0];
-              a.dominantColor.g = c[1];
-              a.dominantColor.b = c[2];
-
-              self.possibleAlbums = self.possibleAlbums.concat(albums);
-              self.indicies = _.startProcessing(_.range(self.possibleAlbums.length));
-              if (self.possibleAlbums.length > 100 && !self.initialProcessingStarted) {
-                self.startProcessing();
-              }
-            };
-            tmpImage.src = a.icon;
           }
           if (self.playCountRange.length < 2) {
             self.playCountRange.push(curMin);
@@ -69,6 +56,10 @@
               self.playCountRange[1] = curMax;
             }
           }
+          self.possibleAlbums = self.possibleAlbums.concat(albums);
+          if (self.possibleAlbums.length > 100 && !self.initialProcessingStarted) {
+                self.startProcessing();
+          }
         }
       });
 
@@ -77,10 +68,10 @@
       var _showGood = function() {
         $('#drawingCanvas').fadeIn();
         $('#albumsCanvas').fadeOut();
-        $('#staticCanvas').fadeOut();
       }
 
       $('.shuffle').click(function() {
+          $('#staticCanvas').hide();
           $('#destinationAlbumColor').css('background-color', 'transparent');
           $('#destinationAlbumIcon').attr('src', null);
           _showGood();
@@ -221,7 +212,6 @@
           var curCol = 0;
           var curRow = 0;
           var tmpImage = new Image();
-          $('#largeAlbum').fadeOut();
           $('#drawingCanvas').fadeOut();
           $('#albumsCanvas').fadeIn();
           tmpImage.onload = function() {
