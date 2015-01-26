@@ -20,15 +20,19 @@
   <body>
     <div class="header">
       <div class="auth"></div>
+      <div class="authenticated">
         <button class="shuffle">Refresh</button>
         <button class="original">Show Original</button>
         <button id="showGoodd">Show Goodd</button>
         <button id="showAlbums">Show Albums</button>
+      </div>
     </div>
     <div class="content">
       <div class="unauthenticated">
-        <p>This app gives you a random selection of albums from your collection and allows you to easily add them to your queue.</p>
-        <p>Sign in above to get started.</p>
+        <p>This is an Rdio hackday project to make cool looking mosaics out of Rdio album art.</p>
+        <p>You must authenticate with Rdio to begin.</p>
+        <p>After authenticating please wait while your collection loads (it may take some time). Subsequent loads
+        will be faster after your collection data is initially retrieved.</p>
       </div>
       <div class="authenticated">
           <p class="appTitle">
