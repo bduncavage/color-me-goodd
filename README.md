@@ -1,19 +1,32 @@
-# Collection Random
+# Color Me Goodd
 
-Gives you a random selection of albums from your collection and allows you to easily add them to your queue.
+Pulls random album art from your Rdio collection and generates a tiled mosaic based on computed dominant
+colors for each cell. It essentially, "pixelates" the album artwork.
 
+Each cell in the resulting mosiac corresponds to an album in your collection. The mapping is
+determined by the color of the cell and the dominant color of the album.
+
+Cells are also given an elevation on the z-axis through drop shadows. The higher the play count of an album
+(i.e. the more times you've listened to it), the higher the elevation. This provides an interesting method
+for comparing album popularity in your collection.
+
+Clicking on each cell will display the album and the dominant color of that album.
+
+There are 3 overlays:
+
+- Goodd: The computed mosiac with clickable cells
+- Original: The unmodified album artwork
+- Album composite: Displays a mosaic using the album artwork associated with each cell's color.
+
+These overlays can be switched between through the buttons at the top of the page.
+
+# Disclaimer and Notes
+
+I am not a javascript programmer, this was a hackday project I put together over the course of a few hours.
+The code is kind of crazy and not really organized.
+
+This uses a modified version of ColorThief (https://github.com/lokesh/color-thief/) to compute dominant color.
+
+I used Ian Gilman's Collection Random project as a starting point to bootstrap development
 http://iangilman.com/rdio/collection-random/
 
-Note that this app requires the "shared_playstate" permission, which you can ask for when you create your own app.
-
-For information on using this example, see https://github.com/rdio/jsapi-examples#rdio-js-api-examples.
-
-# To Do (possible future additions to this example)
-
-* Spinner for initial load
-* During initial load, be more clever about ensuring we don't duplicate
-* When you run our of indicies, refresh the list
-* Deal with collection add and remove events
-* Spinner for queuing
-* Add new albums as albums disappear from being queued
-* Don't use albums that are already in the queue
