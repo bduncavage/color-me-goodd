@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Color Me Goodd</title>
+    <link rel="stylesheet" type="text/css" href="lib/normalize.css">
+    <link rel="stylesheet" type="text/css" href="lib/rdio-utils/rdio-utils.css">
+    <link rel="stylesheet/less" type="text/css" href="main.less">
+
+    <!-- Register your app at http://www.rdio.com/developers/create/ and replace client_id below with yours  -->
+    <script src="https://www.rdio.com/api/api.js?client_id=Jsb8-ZigYlSGEeJfBio6TQ"></script>
+
+    <script src="lib/jquery-1.9.1.min.js"></script>
+    <script src="lib/underscore-1.4.4.min.js"></script>
+    <script src="lib/less-1.3.0.min.js"></script>
+    <script src="lib/rdio-utils/rdio-utils.js"></script>
+    <script src="color-thief.js"></script>
+    <script src="main.js"></script>
+
+  </head>
+  <body>
+    <div class="header">
+      <div class="auth"></div>
+        <button class="shuffle">Refresh</button>
+        <button class="original">Show Original</button>
+        <button id="showGoodd">Show Goodd</button>
+        <button id="showAlbums">Show Albums</button>
+    </div>
+    <div class="content">
+      <div class="unauthenticated">
+        <p>This app gives you a random selection of albums from your collection and allows you to easily add them to your queue.</p>
+        <p>Sign in above to get started.</p>
+      </div>
+      <div class="authenticated">
+          <p class="appTitle">
+            Color Me Goodd
+          </p>
+          <div class="destinationAlbumInfo">
+              <img id="destinationAlbumIcon" />
+              <div id="chosenColor" class="colorDiv"></div>
+              <div id="destinationAlbumColor" class="colorDiv"></div>
+          </div>
+          <div class="gridContainer">
+            <div class="largeAlbumContainer">
+                <canvas class='imageCanvas' id="staticCanvas" width="600" height="600" style="display: none;"></canvas>
+                <canvas class='imageCanvas' id="drawingCanvas" width="600" height="600"></canvas>
+                <canvas class='imageCanvas' id="albumsCanvas" width="600" height="600"></canvas>
+                <img id="largeAlbum" crossOrigin="anonymous" width="600" height="600"/>
+            </div>
+
+            <div class="albums">
+                Loading...
+            </div>
+          </div>
+
+      </div>
+    </div>
+  </body>
+</html>
